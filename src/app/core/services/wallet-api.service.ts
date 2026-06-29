@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Wallet, WalletDTO, Transaction, Page } from '../models/models';
 import { toWallet } from '../models/adapters';
@@ -23,21 +23,25 @@ export class WalletApiService {
       .pipe(map(toWallet));
   }
 
+  getBalance(phone: string): Observable<Wallet> {
+    return this.getByPhone(phone);
+  }
+
   create(phoneNumber: string, ownerName: string): Observable<Wallet> {
     return this.http
       .post<WalletDTO>(this.base, { phoneNumber, ownerName })
       .pipe(map(toWallet));
   }
 
-  deposit(id: number, montant: number): Observable<Wallet> {
+  deposit(id: number, montant: number, moyen: string): Observable<Wallet> {
     return this.http
-      .post<WalletDTO>(`${this.base}/${id}/depot`, { montant })
+      .post<WalletDTO>(`${this.base}/${id}/deposit`, { montant, moyen })
       .pipe(map(toWallet));
   }
 
-  withdraw(id: number, montant: number): Observable<Wallet> {
+  withdraw(phoneNumber: string, montant: number): Observable<Wallet> {
     return this.http
-      .post<WalletDTO>(`${this.base}/${id}/retrait`, { montant })
+      .post<WalletDTO>(`${this.base}/withdraw`, { phoneNumber, montant })
       .pipe(map(toWallet));
   }
 
@@ -47,5 +51,19 @@ export class WalletApiService {
 
   getHistory(id: number): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.base}/${id}/historique`);
+  }
+
+  getTransactionsByPhone(phone: string): Observable<Transaction[]> {
+    return this.getByPhone(phone).pipe(
+      switchMap(wallet => this.getHistory(wallet.id))
+    );
+  }
+
+  payService(phoneNumber: string, serviceName: string, amount: number): Observable<void> {
+    return this.http.post<void>(`${this.base}/pay`, { phoneNumber, serviceName, amount });
+  }
+
+  payFactures(phoneNumber: string, references: string[]): Observable<void> {
+    return this.http.post<void>(`${this.base}/pay-factures`, { phoneNumber, references });
   }
 }

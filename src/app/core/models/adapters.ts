@@ -19,5 +19,7 @@ export function toFacture(dto: FactureDTO): Facture {
     montant: dto.montant,
     statut: dto.statut,
     emetteur: dto.emetteur,
+    echeance: dto.echeance,
+    unite: dto.unite,
   };
 }
