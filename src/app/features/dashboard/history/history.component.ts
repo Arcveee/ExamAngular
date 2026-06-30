@@ -21,7 +21,7 @@ import { Transaction } from '../../../core/models/models';
         </button>
         <h1 class="history-page__title">Historique</h1>
         <div class="history-page__balance-pill">
-          {{ balance() | number: '1.2-2' }} MAD
+          {{ balance() | number: '1.0-0' }} francs
         </div>
       </header>
 
@@ -70,11 +70,14 @@ import { Transaction } from '../../../core/models/models';
                   <td>{{ tx.date | date:'dd/MM/yyyy HH:mm' }}</td>
                   <td>{{ formatType(tx.type) }}</td>
                   <td class="text-right amount-col" [class.amount--positive]="isPositive(tx)" [class.amount--negative]="!isPositive(tx)">
-                    {{ isPositive(tx) ? '+' : '-' }}{{ tx.montant | number:'1.2-2' }}
+                    {{ isPositive(tx) ? '+' : '-' }}{{ tx.montant | number:'1.0-0' }} francs
                   </td>
-                  <td class="text-right">{{ (tx.frais || 0) | number:'1.2-2' }}</td>
+                  <td class="text-right">{{ (tx.frais || 0) | number:'1.0-0' }}</td>
                   <td class="text-center">
-                    <span class="status-badge" [class.status--success]="(tx.statut || 'SUCCESS') === 'SUCCESS'">
+                    <span class="status-badge" 
+                          [class.status-badge--success]="(tx.statut || 'SUCCESS') === 'SUCCESS'"
+                          [class.status-badge--pending]="tx.statut === 'PENDING'"
+                          [class.status-badge--failed]="tx.statut === 'FAILED'">
                       {{ tx.statut || 'SUCCESS' }}
                     </span>
                   </td>
@@ -87,9 +90,9 @@ import { Transaction } from '../../../core/models/models';
 
       @if (!loading() && !error() && totalPages() > 1) {
         <div class="pagination">
-          <button [disabled]="currentPage() === 0" (click)="prevPage()">Précédent</button>
-          <span>Page {{ currentPage() + 1 }} sur {{ totalPages() }}</span>
-          <button [disabled]="currentPage() >= totalPages() - 1" (click)="nextPage()">Suivant</button>
+          <button class="page-btn" [disabled]="currentPage() === 0" (click)="prevPage()">Précédent</button>
+          <span class="page-info">Page {{ currentPage() + 1 }} sur {{ totalPages() }}</span>
+          <button class="page-btn" [disabled]="currentPage() >= totalPages() - 1" (click)="nextPage()">Suivant</button>
         </div>
       }
     </div>
@@ -100,11 +103,12 @@ import { Transaction } from '../../../core/models/models';
     .history-page {
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f1b35 0%, #1a2f55 50%, #0d2137 100%);
+      background-color: #f9fafb;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      color: #111827;
     }
 
     .history-page__header {
@@ -118,21 +122,32 @@ import { Transaction } from '../../../core/models/models';
       display: flex;
       align-items: center;
       gap: 0.35rem;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      color: rgba(255,255,255,.75);
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #374151;
       padding: 0.45rem 0.9rem;
-      border-radius: 20px;
+      border-radius: 8px;
       font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: background .2s, color .2s;
+      transition: all 0.2s;
     }
 
-    .back-btn:hover { background: rgba(255,255,255,.14); color: #fff; }
-    .history-page__title { color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0; }
+    .back-btn:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .history-page__title {
+      color: #111827;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
     .history-page__balance-pill {
-      background: linear-gradient(135deg, #0070f3, #00c9a7);
-      color: #fff;
+      background: #eff6ff;
+      color: #2563eb;
       padding: 0.3rem 0.85rem;
       border-radius: 20px;
       font-size: 0.8rem;
@@ -140,106 +155,154 @@ import { Transaction } from '../../../core/models/models';
       white-space: nowrap;
     }
 
-    .filters {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      background: rgba(255,255,255,.06);
-      padding: 1rem;
+    .filters-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
       border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    }
+    
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .filter-group {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.4rem;
       flex: 1;
-      min-width: 120px;
+      min-width: 140px;
     }
 
     .filter-group label {
-      color: rgba(255,255,255,.6);
-      font-size: 0.8rem;
+      color: #4b5563;
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .filter-group input, .filter-group select {
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.15);
-      color: #fff;
-      padding: 0.5rem;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
       border-radius: 8px;
-      font-size: 0.9rem;
+      padding: 0.75rem;
+      color: #111827;
+      font-size: 0.95rem;
+      font-family: inherit;
       outline: none;
+      transition: all 0.2s;
     }
-    .filter-group select option { background: #1a2f55; color: #fff; }
+
+    .filter-group input:focus, .filter-group select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
 
     .table-container {
-      background: rgba(255,255,255,.06);
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
       border-radius: 12px;
       overflow-x: auto;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
     }
 
-    .state-msg { color: rgba(255,255,255,.6); text-align: center; padding: 2rem; }
-    .state-msg--error { color: #f87171; }
-
-    .history-table {
+    table {
       width: 100%;
       border-collapse: collapse;
-      color: #fff;
-      font-size: 0.9rem;
-    }
-
-    .history-table th, .history-table td {
-      padding: 1rem;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-    }
-
-    .history-table th {
       text-align: left;
-      color: rgba(255,255,255,.5);
-      font-weight: 500;
-      font-size: 0.85rem;
-      text-transform: uppercase;
     }
 
-    .text-right { text-align: right !important; }
-    .text-center { text-align: center !important; }
+    th {
+      background: #f9fafb;
+      color: #4b5563;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
 
-    .amount-col { font-weight: 600; }
-    .amount--positive { color: #4ade80; }
-    .amount--negative { color: #f87171; }
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.95rem;
+      color: #111827;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f9fafb;
+    }
+
+    .amount--positive { color: #10b981; font-weight: 600; }
+    .amount--negative { color: #ef4444; font-weight: 600; }
 
     .status-badge {
       display: inline-block;
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.6rem;
       border-radius: 12px;
       font-size: 0.75rem;
       font-weight: 600;
-      background: rgba(255,255,255,.1);
     }
-    .status--success { background: rgba(74,222,128,.15); color: #4ade80; }
+    .status-badge--success { background: #d1fae5; color: #065f46; }
+    .status-badge--pending { background: #fef3c7; color: #92400e; }
+    .status-badge--failed { background: #fee2e2; color: #991b1b; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+    
+    .loading-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6b7280;
+    }
 
     .pagination {
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       gap: 1rem;
-      color: rgba(255,255,255,.6);
-      font-size: 0.9rem;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
 
-    .pagination button {
-      background: rgba(255,255,255,.1);
-      border: none;
-      color: #fff;
+    .page-btn {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #374151;
       padding: 0.5rem 1rem;
       border-radius: 8px;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
-    .pagination button:hover:not(:disabled) { background: rgba(255,255,255,.15); }
-    .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .page-btn:hover:not(:disabled) {
+      background: #f3f4f6;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      color: #4b5563;
+      font-size: 0.9rem;
+    }
   `]
 })
 export class HistoryComponent implements OnInit {
@@ -332,7 +395,7 @@ export class HistoryComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/client']);
+    this.router.navigate(['/dashboard']);
   }
 
   formatType(type: string): string {

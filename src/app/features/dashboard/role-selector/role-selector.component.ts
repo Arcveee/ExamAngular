@@ -26,8 +26,9 @@ import { UserRole } from '../../../core/models/models';
             id="phone-input"
             type="tel"
             class="selector__phone-input"
-            [(ngModel)]="phoneInput"
-            placeholder="Ex: 0612345678"
+            [ngModel]="phoneInput()"
+            (ngModelChange)="onPhoneInput($event)"
+            placeholder="Ex: 77 123 43 32"
             (keyup.enter)="confirmClient()"
           />
           <div class="selector__form-actions">
@@ -93,14 +94,29 @@ export class RoleSelectorComponent {
 
   select(role: UserRole): void {
     this.roleService.setRole(role);
-    this.router.navigate([role === 'agent' ? '/agent' : '/client']);
+    if (role === 'agent') {
+      this.router.navigate(['/admin/wallets']);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   confirmClient(): void {
     const phone = this.phoneInput().trim();
-    if (!phone) return;
+    const clean = phone.replace(/\s/g, '');
+    if (clean.length !== 9) return;
     this.walletState.setPhone(phone);
     this.roleService.setRole('client');
-    this.router.navigate(['/client']);
+    this.router.navigate(['/dashboard']);
+  }
+
+  onPhoneInput(value: string): void {
+    const clean = value.replace(/\D/g, '').substring(0, 9);
+    let formatted = '';
+    if (clean.length > 0) formatted = clean.substring(0, 2);
+    if (clean.length > 2) formatted += ' ' + clean.substring(2, 5);
+    if (clean.length > 5) formatted += ' ' + clean.substring(5, 7);
+    if (clean.length > 7) formatted += ' ' + clean.substring(7, 9);
+    this.phoneInput.set(formatted);
   }
 }

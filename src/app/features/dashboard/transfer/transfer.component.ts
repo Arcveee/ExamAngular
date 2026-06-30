@@ -21,7 +21,7 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
         </button>
         <h1 class="transfer-page__title">Virement</h1>
         <div class="transfer-page__balance-pill">
-          {{ balance() | number: '1.2-2' }} {{ devise() }}
+          {{ balance() | number: '1.0-0' }} francs
         </div>
       </header>
 
@@ -30,7 +30,7 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
           <div class="success-banner__icon">✓</div>
           <div>
             <p class="success-banner__title">Virement effectué</p>
-            <p class="success-banner__sub">{{ lastMontant() | number:'1.2-2' }} {{ devise() }} envoyé à {{ lastRecipient() }}</p>
+            <p class="success-banner__sub">{{ lastMontant() | number:'1.0-0' }} francs envoyé à {{ lastRecipient() }}</p>
           </div>
         </div>
       }
@@ -47,10 +47,10 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
             id="recipient"
             type="tel"
             class="field__input"
-            [(ngModel)]="recipient"
-            placeholder="Ex: 0612345678"
+            [ngModel]="recipient()"
+            placeholder="Ex: 77 123 43 32"
             (blur)="recipientTouched.set(true)"
-            (ngModelChange)="clearSuccess()"
+            (ngModelChange)="onPhoneInput($event); clearSuccess()"
             autocomplete="off"
           />
           @if (recipientTouched() && recipientError()) {
@@ -66,12 +66,13 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
               type="number"
               class="field__input field__input--amount"
               [(ngModel)]="amount"
-              placeholder="0.00"
-              min="0.01"
+              placeholder="0"
+              min="1"
+              (keydown)="preventInvalidChars($event)"
               (blur)="amountTouched.set(true)"
               (ngModelChange)="clearSuccess()"
             />
-            <span class="field__devise">{{ devise() }}</span>
+            <span class="field__devise">francs</span>
           </div>
           @if (amountTouched() && amountError()) {
             <p class="field__error">{{ amountError() }}</p>
@@ -108,11 +109,12 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
     .transfer-page {
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f1b35 0%, #1a2f55 50%, #0d2137 100%);
+      background-color: #f9fafb;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      color: #111827;
     }
 
     .transfer-page__header {
@@ -126,31 +128,32 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
       display: flex;
       align-items: center;
       gap: 0.35rem;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      color: rgba(255,255,255,.75);
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #374151;
       padding: 0.45rem 0.9rem;
-      border-radius: 20px;
+      border-radius: 8px;
       font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: background .2s, color .2s;
+      transition: all 0.2s;
     }
 
     .back-btn:hover {
-      background: rgba(255,255,255,.14);
-      color: #fff;
+      background: #f3f4f6;
+      color: #111827;
     }
 
     .transfer-page__title {
-      color: #fff;
+      color: #111827;
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: 600;
       margin: 0;
     }
 
     .transfer-page__balance-pill {
-      background: linear-gradient(135deg, #0070f3, #00c9a7);
-      color: #fff;
+      background: #eff6ff;
+      color: #2563eb;
       padding: 0.3rem 0.85rem;
       border-radius: 20px;
       font-size: 0.8rem;
@@ -162,11 +165,11 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
       display: flex;
       align-items: center;
       gap: 1rem;
-      background: rgba(74,222,128,.12);
-      border: 1px solid rgba(74,222,128,.35);
-      border-radius: 14px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 12px;
       padding: 1rem 1.25rem;
-      animation: slideDown .3s ease;
+      animation: slideDown 0.3s ease;
     }
 
     @keyframes slideDown {
@@ -178,8 +181,8 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: #4ade80;
-      color: #0f2810;
+      background: #10b981;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -189,27 +192,27 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
     }
 
     .success-banner__title {
-      color: #4ade80;
+      color: #065f46;
       font-weight: 700;
       margin: 0 0 0.15rem;
       font-size: 0.95rem;
     }
 
     .success-banner__sub {
-      color: rgba(255,255,255,.6);
+      color: #047857;
       font-size: 0.82rem;
       margin: 0;
     }
 
     .transfer-card {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      backdrop-filter: blur(16px);
-      border-radius: 24px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
       padding: 2rem 1.75rem;
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
     }
 
     .transfer-card__icon-wrap {
@@ -221,19 +224,18 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
       width: 56px;
       height: 56px;
       border-radius: 16px;
-      background: linear-gradient(135deg, #0070f3, #00c9a7);
-      color: #fff;
+      background: #eff6ff;
+      color: #2563eb;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.8rem;
       font-weight: 700;
-      box-shadow: 0 6px 24px rgba(0,112,243,.35);
     }
 
     .transfer-card__lead {
       text-align: center;
-      color: rgba(255,255,255,.6);
+      color: #4b5563;
       font-size: 0.9rem;
       margin: 0;
     }
@@ -245,7 +247,7 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
     }
 
     .field__label {
-      color: rgba(255,255,255,.55);
+      color: #4b5563;
       font-size: 0.78rem;
       font-weight: 500;
       text-transform: uppercase;
@@ -253,33 +255,33 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
     }
 
     .field__input {
-      background: rgba(255,255,255,.07);
-      border: 1.5px solid rgba(255,255,255,.14);
-      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
       padding: 0.85rem 1rem;
-      color: #fff;
+      color: #111827;
       font-size: 1rem;
       font-family: inherit;
       outline: none;
-      transition: border-color .2s, box-shadow .2s;
+      transition: all 0.2s;
       width: 100%;
       box-sizing: border-box;
     }
 
-    .field__input::placeholder { color: rgba(255,255,255,.25); }
+    .field__input::placeholder { color: #9ca3af; }
 
     .field__input:focus {
-      border-color: #0070f3;
-      box-shadow: 0 0 0 3px rgba(0,112,243,.2);
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
     .field--error .field__input {
-      border-color: #f87171;
-      box-shadow: 0 0 0 3px rgba(248,113,113,.15);
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
     }
 
     .field__error {
-      color: #f87171;
+      color: #ef4444;
       font-size: 0.78rem;
       margin: 0;
     }
@@ -297,18 +299,18 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
       right: 1rem;
       top: 50%;
       transform: translateY(-50%);
-      color: rgba(255,255,255,.4);
+      color: #6b7280;
       font-size: 0.85rem;
       font-weight: 500;
       pointer-events: none;
     }
 
     .api-error {
-      background: rgba(248,113,113,.1);
-      border: 1px solid rgba(248,113,113,.3);
-      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
       padding: 0.75rem 1rem;
-      color: #f87171;
+      color: #ef4444;
       font-size: 0.85rem;
     }
 
@@ -317,30 +319,36 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      background: linear-gradient(135deg, #0070f3, #00c9a7);
-      color: #fff;
+      background: #2563eb;
+      color: #ffffff;
       border: none;
-      border-radius: 14px;
+      border-radius: 8px;
       padding: 1rem;
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 600;
       font-family: inherit;
       cursor: pointer;
-      transition: opacity .2s, transform .15s;
-      box-shadow: 0 4px 20px rgba(0,112,243,.35);
+      transition: all 0.2s;
+      margin-top: 0.5rem;
     }
 
-    .submit-btn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
-    .submit-btn:active:not(:disabled) { transform: translateY(0); }
-    .submit-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .submit-btn:hover:not(:disabled) {
+      background: #1d4ed8;
+      box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2);
+    }
+
+    .submit-btn:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
 
     .submit-btn__spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(255,255,255,.3);
-      border-top-color: #fff;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #ffffff;
       border-radius: 50%;
-      animation: spin .7s linear infinite;
+      animation: spin 0.7s linear infinite;
       flex-shrink: 0;
     }
 
@@ -351,8 +359,8 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
     }
 
     .transfer-meta__from {
-      color: rgba(255,255,255,.3);
-      font-size: 0.78rem;
+      color: #6b7280;
+      font-size: 0.8rem;
     }
   `],
 })
@@ -383,7 +391,8 @@ export class TransferComponent {
   readonly recipientError = computed(() => {
     const value = this.recipient().trim();
     if (!value) return 'Le numéro destinataire est requis';
-    if (!/^[0-9]{10,15}$/.test(value)) return 'Format invalide (10 à 15 chiffres)';
+    const digits = value.replace(/\s/g, '');
+    if (!/^[0-9]{9}$/.test(digits)) return 'Format invalide (9 chiffres — ex: 77 123 43 32)';
     if (value === this.senderPhone()) return 'Le destinataire ne peut pas être vous-même';
     return null;
   });
@@ -404,13 +413,30 @@ export class TransferComponent {
       this.walletId() !== null
   );
 
+  onPhoneInput(value: string): void {
+    const clean = value.replace(/\D/g, '').substring(0, 9);
+    let formatted = '';
+    if (clean.length > 0) formatted = clean.substring(0, 2);
+    if (clean.length > 2) formatted += ' ' + clean.substring(2, 5);
+    if (clean.length > 5) formatted += ' ' + clean.substring(5, 7);
+    if (clean.length > 7) formatted += ' ' + clean.substring(7, 9);
+    this.recipient.set(formatted);
+  }
+
   clearSuccess(): void {
     this.success.set(false);
     this.apiError.set(null);
   }
 
   goBack(): void {
-    this.router.navigate(['/client']);
+    this.router.navigate(['/dashboard']);
+  }
+
+  preventInvalidChars(event: KeyboardEvent): void {
+    const invalidChars = ['e', 'E', '+', '-', '.', ','];
+    if (invalidChars.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 
   submit(): void {
@@ -429,7 +455,7 @@ export class TransferComponent {
     this.success.set(false);
 
     this.walletApi
-      .transfer(id, toPhone, montant)
+      .transfer(phone, toPhone, montant)
       .pipe(switchMap(() => this.walletApi.getBalance(phone)))
       .subscribe({
         next: wallet => {

@@ -19,51 +19,69 @@ export class WalletApiService {
 
   getByPhone(phone: string): Observable<Wallet> {
     return this.http
-      .get<WalletDTO>(`${this.base}/phone/${phone}`)
+      .get<WalletDTO>(`${this.base}/${encodeURIComponent(phone)}`)
       .pipe(map(toWallet));
   }
 
   getBalance(phone: string): Observable<Wallet> {
-    return this.getByPhone(phone);
+    return this.http
+      .get<WalletDTO>(`${this.base}/${encodeURIComponent(phone)}/balance`)
+      .pipe(map(toWallet));
   }
 
   create(phoneNumber: string, ownerName: string): Observable<Wallet> {
+    const code = 'WLT-' + Math.random().toString(36).substr(2, 6).toUpperCase();
     return this.http
-      .post<WalletDTO>(this.base, { phoneNumber, ownerName })
+      .post<WalletDTO>(this.base, { 
+        phoneNumber, 
+        ownerName,
+        initialBalance: 0,
+        code,
+        currency: 'XOF'
+      })
       .pipe(map(toWallet));
   }
 
-  deposit(id: number, montant: number, moyen: string): Observable<Wallet> {
+  deposit(id: number, amount: number, paymentMethod: string): Observable<Wallet> {
     return this.http
-      .post<WalletDTO>(`${this.base}/${id}/deposit`, { montant, moyen })
+      .post<WalletDTO>(`${this.base}/${id}/deposit`, { amount, paymentMethod })
       .pipe(map(toWallet));
   }
 
-  withdraw(phoneNumber: string, montant: number): Observable<Wallet> {
+  withdraw(phoneNumber: string, amount: number): Observable<Wallet> {
     return this.http
-      .post<WalletDTO>(`${this.base}/withdraw`, { phoneNumber, montant })
+      .post<WalletDTO>(`${this.base}/withdraw`, { phoneNumber, amount })
       .pipe(map(toWallet));
   }
 
-  transfer(fromId: number, toPhone: string, montant: number): Observable<void> {
-    return this.http.post<void>(`${this.base}/${fromId}/transfert`, { toPhone, montant });
-  }
-
-  getHistory(id: number): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.base}/${id}/historique`);
+  transfer(senderPhone: string, receiverPhone: string, amount: number): Observable<void> {
+    return this.http.post<void>(`${this.base}/transfer`, { senderPhone, receiverPhone, amount });
   }
 
   getTransactionsByPhone(phone: string): Observable<Transaction[]> {
-    return this.getByPhone(phone).pipe(
-      switchMap(wallet => this.getHistory(wallet.id))
-    );
+    return this.http.get<any[]>(`${this.base}/${encodeURIComponent(phone)}/transactions`)
+      .pipe(map(list => {
+        // Handle paginated response (Spring Page) or plain array
+        const items = Array.isArray(list) ? list : (list as any).content ?? [];
+        return items.map((tx: any): Transaction => ({
+          id: tx.id,
+          type: tx.type,
+          montant: Number(tx.amount ?? tx.montant ?? 0),
+          date: tx.createdAt ?? tx.date,
+          description: tx.type,
+          frais: Number(tx.fee ?? tx.frais ?? 0),
+          statut: tx.status ?? tx.statut ?? 'SUCCESS',
+          sourceWalletId: tx.sourceWalletId,
+          targetWalletId: tx.targetWalletId,
+        }));
+      }));
   }
 
   payService(phoneNumber: string, serviceName: string, amount: number): Observable<void> {
     return this.http.post<void>(`${this.base}/pay`, { phoneNumber, serviceName, amount });
   }
 
-  payFactures(phoneNumber: string, references: string[]): Observable<void> {
-    return this.http.post<void>(`${this.base}/pay-factures`, { phoneNumber, references });
+  payFactures(phoneNumber: string, serviceName: string, factureReferences: string[]): Observable<void> {
+    return this.http.post<void>(`${this.base}/pay-factures`, { phoneNumber, serviceName, factureReferences });
   }
 }

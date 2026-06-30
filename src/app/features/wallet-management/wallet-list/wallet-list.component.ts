@@ -3,15 +3,17 @@ import { DecimalPipe, DatePipe } from '@angular/common';
 import { WalletApiService } from '../../../core/services/wallet-api.service';
 import { Wallet, Page } from '../../../core/models/models';
 import { WalletSearchComponent } from '../wallet-search/wallet-search.component';
+import { WalletCreateComponent } from '../wallet-create/wallet-create.component';
 
 @Component({
   selector: 'app-wallet-list',
   standalone: true,
-  imports: [DecimalPipe, DatePipe, WalletSearchComponent],
+  imports: [DecimalPipe, DatePipe, WalletSearchComponent, WalletCreateComponent],
   template: `
     <div class="wallet-list">
-      <h2 class="wallet-list__title">Portefeuilles</h2>
+      <h2 class="wallet-list__title">Gestion des Portefeuilles (Agent)</h2>
       
+      <app-wallet-create></app-wallet-create>
       <app-wallet-search></app-wallet-search>
 
       @if (loading()) {
@@ -25,9 +27,8 @@ import { WalletSearchComponent } from '../wallet-search/wallet-search.component'
           <thead>
             <tr>
               <th>Téléphone</th>
-              <th>Code</th>
+              <th>Prénom</th>
               <th>Solde</th>
-              <th>Devise</th>
               <th>Créé le</th>
             </tr>
           </thead>
@@ -35,10 +36,9 @@ import { WalletSearchComponent } from '../wallet-search/wallet-search.component'
             @for (w of page()!.content; track w.id) {
               <tr>
                 <td>{{ w.phoneNumber }}</td>
-                <td>{{ w.code }}</td>
-                <td>{{ w.balance | number: '1.2-2' }}</td>
-                <td>{{ w.devise }}</td>
-                <td>{{ w.createdAt | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ w.ownerName }}</td>
+                <td>{{ w.balance | number: '1.2-2' }} francs</td>
+                <td>{{ w.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
               </tr>
             }
           </tbody>

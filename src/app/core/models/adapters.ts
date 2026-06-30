@@ -6,7 +6,7 @@ export function toWallet(dto: WalletDTO): Wallet {
     phoneNumber: dto.phoneNumber,
     code: dto.code,
     balance: dto.balance,
-    devise: dto.devise,
+    devise: dto.currency || dto.devise || 'XOF',
     ownerName: dto.ownerName,
     createdAt: dto.createdAt,
   };
