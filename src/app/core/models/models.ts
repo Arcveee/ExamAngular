@@ -15,7 +15,8 @@ export interface WalletDTO {
   phoneNumber: string;
   code: string;
   balance: number;
-  devise: string;
+  devise?: string;
+  currency?: string;
   ownerName: string;
   createdAt: string;
 }
@@ -48,6 +49,8 @@ export interface Transaction {
   description: string;
   frais?: number;
   statut?: string;
+  sourceWalletId?: number;
+  targetWalletId?: number;
 }
 
 export interface Page<T> {

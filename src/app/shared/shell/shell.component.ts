@@ -12,7 +12,7 @@ import { WalletStateService } from '../../core/services/wallet-state.service';
     <header class="header">
       <span class="header__title">BadWallet</span>
       <span class="header__balance">
-        {{ role() === 'client' ? (balance() | number: '1.2-2') + ' FCFA' : '—' }}
+        {{ role() === 'client' ? (balance() | number: '1.0-0') + ' francs' : '—' }}
       </span>
       <button class="header__logout" (click)="changeRole()">Changer de rôle</button>
     </header>
