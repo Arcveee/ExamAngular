@@ -19,12 +19,14 @@ export class WalletApiService {
 
   getByPhone(phone: string): Observable<Wallet> {
     return this.http
-      .get<WalletDTO>(`${this.base}/phone/${phone}`)
+      .get<WalletDTO>(`${this.base}/${phone}`)
       .pipe(map(toWallet));
   }
 
   getBalance(phone: string): Observable<Wallet> {
-    return this.getByPhone(phone);
+    return this.http
+      .get<WalletDTO>(`${this.base}/${phone}/balance`)
+      .pipe(map(toWallet));
   }
 
   create(phoneNumber: string, ownerName: string): Observable<Wallet> {
@@ -45,18 +47,12 @@ export class WalletApiService {
       .pipe(map(toWallet));
   }
 
-  transfer(fromId: number, toPhone: string, montant: number): Observable<void> {
-    return this.http.post<void>(`${this.base}/${fromId}/transfert`, { toPhone, montant });
-  }
-
-  getHistory(id: number): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.base}/${id}/historique`);
+  transfer(senderPhone: string, receiverPhone: string, amount: number): Observable<void> {
+    return this.http.post<void>(`${this.base}/transfer`, { senderPhone, receiverPhone, amount });
   }
 
   getTransactionsByPhone(phone: string): Observable<Transaction[]> {
-    return this.getByPhone(phone).pipe(
-      switchMap(wallet => this.getHistory(wallet.id))
-    );
+    return this.http.get<Transaction[]>(`${this.base}/${phone}/transactions`);
   }
 
   payService(phoneNumber: string, serviceName: string, amount: number): Observable<void> {

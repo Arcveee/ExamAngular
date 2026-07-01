@@ -23,7 +23,7 @@ export class BillingApiService {
       params = params.set('unite', unite);
     }
     return this.http
-      .get<FactureDTO[]>(`${this.base}/code/${code}`, { params })
+      .get<FactureDTO[]>(`${this.base}/${code}/current`, { params })
       .pipe(map(list => list.map(toFacture)));
   }
 

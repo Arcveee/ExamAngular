@@ -114,11 +114,12 @@ declare const Chart: any;
     .dashboard {
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f1b35 0%, #1a2f55 50%, #0d2137 100%);
+      background-color: #f9fafb;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
+      color: #111827;
     }
 
     .dashboard__header {
@@ -134,105 +135,74 @@ declare const Chart: any;
     }
 
     .dashboard__icon {
-      font-size: 2rem;
-      background: rgba(255,255,255,.08);
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      width: 48px;
-      height: 48px;
+      background: #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.2rem;
+      color: #4b5563;
     }
 
     .dashboard__label {
-      color: rgba(255,255,255,.5);
-      font-size: 0.75rem;
-      margin: 0;
+      color: #6b7280;
+      font-size: 0.8rem;
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      margin: 0;
     }
 
     .dashboard__phone {
-      color: #fff;
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin: 0.15rem 0 0;
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0;
     }
 
     .dashboard__badge {
-      background: linear-gradient(135deg, #00c9a7, #0070f3);
-      color: #fff;
-      padding: 0.3rem 0.9rem;
+      background: rgba(37,99,235,0.1);
+      color: #2563eb;
+      padding: 0.4rem 0.8rem;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.04em;
     }
 
     .balance-card {
-      background: linear-gradient(135deg, #0070f3 0%, #00c9a7 100%);
-      border-radius: 20px;
+      background: #2563eb;
+      border-radius: 16px;
       padding: 2rem 1.75rem;
-      box-shadow: 0 8px 32px rgba(0,112,243,.35);
+      box-shadow: 0 10px 15px -3px rgba(37,99,235,0.3);
       position: relative;
       overflow: hidden;
-    }
-
-    .balance-card::before {
-      content: '';
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 160px;
-      height: 160px;
-      background: rgba(255,255,255,.08);
-      border-radius: 50%;
+      color: #ffffff;
     }
 
     .balance-card::after {
       content: '';
       position: absolute;
-      bottom: -60px;
-      right: 20px;
-      width: 200px;
-      height: 200px;
-      background: rgba(255,255,255,.05);
+      bottom: -30px;
+      left: -20px;
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.1);
       border-radius: 50%;
     }
 
     .balance-card__label {
-      color: rgba(255,255,255,.75);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.9;
       margin: 0 0 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .balance-card__skeleton {
-      height: 3rem;
-      width: 200px;
-      background: rgba(255,255,255,.2);
-      border-radius: 8px;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .4; }
-    }
-
-    .balance-card__error {
-      color: rgba(255,255,255,.8);
-      font-size: 1rem;
-      margin: 0;
     }
 
     .balance-card__amount {
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: 700;
-      color: #fff;
       margin: 0 0 1rem;
-      line-height: 1;
       letter-spacing: -0.02em;
     }
 
@@ -240,14 +210,14 @@ declare const Chart: any;
       font-size: 1.2rem;
       font-weight: 400;
       margin-left: 0.25rem;
-      opacity: .8;
+      opacity: 0.9;
     }
 
     .balance-card__meta {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: rgba(255,255,255,.75);
+      color: rgba(255,255,255,0.9);
       font-size: 0.8rem;
     }
 
@@ -258,7 +228,7 @@ declare const Chart: any;
       display: inline-block;
     }
 
-    .balance-card__dot--green { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+    .balance-card__dot--green { background: #4ade80; }
 
     .quick-actions {
       display: flex;
@@ -269,35 +239,36 @@ declare const Chart: any;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.4rem;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 16px;
-      padding: 1rem 1.5rem;
-      color: rgba(255,255,255,.85);
+      gap: 0.5rem;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem 0.5rem;
+      color: #374151;
       text-decoration: none;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 500;
-      transition: background .2s, transform .15s;
+      transition: all 0.2s;
       flex: 1;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
     }
 
     .quick-action-btn:hover {
-      background: rgba(255,255,255,.12);
+      border-color: #d1d5db;
       transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
 
     .quick-action-btn__icon {
       width: 40px;
       height: 40px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #0070f3, #00c9a7);
+      border-radius: 10px;
+      background: #eff6ff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.2rem;
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(0,112,243,.3);
+      color: #2563eb;
     }
 
     .stats-row {
@@ -307,95 +278,95 @@ declare const Chart: any;
     }
 
     .stat-card {
-      border-radius: 16px;
-      padding: 1.25rem;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      backdrop-filter: blur(10px);
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
     }
 
     .stat-card__label {
-      color: rgba(255,255,255,.55);
-      font-size: 0.75rem;
-      margin: 0 0 0.4rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      color: #6b7280;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin: 0 0 0.5rem;
     }
 
-    .stat-card--income .stat-card__value { color: #4ade80; }
-    .stat-card--expense .stat-card__value { color: #f87171; }
-
     .stat-card__value {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 700;
       margin: 0;
     }
+    
+    .stat-card--income .stat-card__value { color: #10b981; }
+    .stat-card--expense .stat-card__value { color: #ef4444; }
 
     .chart-section {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
       padding: 1.5rem;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
     }
 
     .chart-section__title {
-      color: #fff;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      margin: 0 0 1.25rem;
+      margin: 0 0 1.5rem;
+      color: #111827;
     }
-
-    .chart-section__placeholder {
-      color: rgba(255,255,255,.4);
-      text-align: center;
-      padding: 3rem 0;
-      font-size: 0.9rem;
-    }
-
-    .chart-section__placeholder--error { color: #f87171; }
 
     .chart-section__wrap {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 2rem;
-      flex-wrap: wrap;
+      gap: 1.5rem;
     }
 
-    canvas { max-width: 220px; max-height: 220px; }
+    .chart-section__placeholder {
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+      background: #f3f4f6;
+      border-radius: 12px;
+      font-size: 0.9rem;
+    }
+
+    .chart-section__placeholder--error {
+      color: #ef4444;
+      background: #fef2f2;
+    }
 
     .chart-section__legend {
       display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      justify-content: center;
+      gap: 1.5rem;
+      width: 100%;
     }
 
     .legend-item {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.6rem;
-      color: rgba(255,255,255,.85);
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      color: #4b5563;
+      gap: 0.2rem;
     }
 
     .legend-item strong {
-      margin-left: auto;
-      color: #fff;
-      font-size: 1rem;
-      min-width: 80px;
-      text-align: right;
+      color: #111827;
+      font-size: 0.95rem;
     }
 
     .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      flex-shrink: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-bottom: 0.2rem;
     }
 
-    .legend-dot--income { background: #4ade80; }
-    .legend-dot--expense { background: #f87171; }
+    .legend-dot--income { background: #10b981; }
+    .legend-dot--expense { background: #ef4444; }
   `],
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {

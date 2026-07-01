@@ -153,12 +153,13 @@ import { Facture } from '../../../core/models/models';
     .billing-page {
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f1b35 0%, #1a2f55 50%, #0d2137 100%);
+      background-color: #f9fafb;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
       padding-bottom: 9rem;
+      color: #111827;
     }
 
     .billing-page__header {
@@ -172,31 +173,32 @@ import { Facture } from '../../../core/models/models';
       display: flex;
       align-items: center;
       gap: 0.35rem;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      color: rgba(255,255,255,.75);
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #374151;
       padding: 0.45rem 0.9rem;
-      border-radius: 20px;
+      border-radius: 8px;
       font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: background .2s, color .2s;
+      transition: all 0.2s;
     }
 
     .back-btn:hover {
-      background: rgba(255,255,255,.14);
-      color: #fff;
+      background: #f3f4f6;
+      color: #111827;
     }
 
     .billing-page__title {
-      color: #fff;
+      color: #111827;
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: 600;
       margin: 0;
     }
 
     .billing-page__balance-pill {
-      background: linear-gradient(135deg, #0070f3, #00c9a7);
-      color: #fff;
+      background: #eff6ff;
+      color: #2563eb;
       padding: 0.3rem 0.85rem;
       border-radius: 20px;
       font-size: 0.8rem;
@@ -208,11 +210,11 @@ import { Facture } from '../../../core/models/models';
       display: flex;
       align-items: center;
       gap: 1rem;
-      background: rgba(74,222,128,.12);
-      border: 1px solid rgba(74,222,128,.35);
-      border-radius: 14px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 12px;
       padding: 1rem 1.25rem;
-      animation: slideDown .3s ease;
+      animation: slideDown 0.3s ease;
     }
 
     @keyframes slideDown {
@@ -224,8 +226,8 @@ import { Facture } from '../../../core/models/models';
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: #4ade80;
-      color: #0f2810;
+      background: #10b981;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -235,14 +237,14 @@ import { Facture } from '../../../core/models/models';
     }
 
     .success-banner__title {
-      color: #4ade80;
+      color: #065f46;
       font-weight: 700;
       margin: 0 0 0.15rem;
       font-size: 0.95rem;
     }
 
     .success-banner__sub {
-      color: rgba(255,255,255,.6);
+      color: #047857;
       font-size: 0.82rem;
       margin: 0;
     }
@@ -254,23 +256,25 @@ import { Facture } from '../../../core/models/models';
     }
 
     .filter-label {
-      color: rgba(255,255,255,.6);
+      color: #4b5563;
       font-size: 0.85rem;
+      font-weight: 500;
     }
 
     .filter-select {
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.15);
-      color: #fff;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #111827;
       padding: 0.75rem 1rem;
-      border-radius: 12px;
+      border-radius: 8px;
       font-size: 1rem;
       outline: none;
+      transition: all 0.2s;
     }
 
-    .filter-select option {
-      background: #1a2f55;
-      color: #fff;
+    .filter-select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
     .factures-list {
@@ -280,36 +284,46 @@ import { Facture } from '../../../core/models/models';
     }
 
     .loading-state, .error-state, .empty-state {
-      color: rgba(255,255,255,.6);
+      color: #6b7280;
       text-align: center;
       padding: 2rem;
-      background: rgba(255,255,255,.05);
+      background: #f3f4f6;
       border-radius: 12px;
+      font-size: 0.95rem;
     }
 
-    .error-state { color: #f87171; }
+    .error-state {
+      color: #ef4444;
+      background: #fef2f2;
+    }
 
     .facture-card {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
       padding: 1rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      transition: background 0.2s, border-color 0.2s;
+      transition: all 0.2s;
       cursor: pointer;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    }
+    
+    .facture-card:hover {
+      border-color: #d1d5db;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
 
     .facture-card--selected {
-      background: rgba(0,201,167,.1);
-      border-color: rgba(0,201,167,.4);
+      background: #eff6ff;
+      border-color: #93c5fd;
     }
 
     .facture-card__checkbox input {
       width: 20px;
       height: 20px;
-      accent-color: #00c9a7;
+      accent-color: #2563eb;
     }
 
     .facture-card__content {
@@ -327,13 +341,13 @@ import { Facture } from '../../../core/models/models';
     }
 
     .facture-card__provider {
-      color: #fff;
+      color: #111827;
       font-weight: 600;
       font-size: 1rem;
     }
 
     .facture-card__ref {
-      color: rgba(255,255,255,.5);
+      color: #6b7280;
       font-size: 0.8rem;
     }
 
@@ -344,13 +358,13 @@ import { Facture } from '../../../core/models/models';
     }
 
     .facture-card__amount {
-      color: #00c9a7;
+      color: #2563eb;
       font-weight: 700;
       font-size: 1.1rem;
     }
 
     .facture-card__date {
-      color: rgba(255,255,255,.6);
+      color: #6b7280;
       font-size: 0.85rem;
     }
 
@@ -359,22 +373,23 @@ import { Facture } from '../../../core/models/models';
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(15,27,53,.95);
+      background: rgba(255,255,255,0.95);
       backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255,255,255,.1);
+      border-top: 1px solid #e5e7eb;
       padding: 1rem 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
       z-index: 10;
+      box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05);
     }
     
     .api-error {
-      background: rgba(248,113,113,.1);
-      border: 1px solid rgba(248,113,113,.3);
-      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
       padding: 0.5rem;
-      color: #f87171;
+      color: #ef4444;
       font-size: 0.85rem;
       text-align: center;
     }
@@ -383,12 +398,12 @@ import { Facture } from '../../../core/models/models';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #fff;
+      color: #111827;
     }
 
     .summary-count {
       font-size: 0.9rem;
-      color: rgba(255,255,255,.7);
+      color: #6b7280;
     }
 
     .summary-total {
@@ -401,35 +416,39 @@ import { Facture } from '../../../core/models/models';
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      background: linear-gradient(135deg, #0070f3, #00c9a7);
-      color: #fff;
+      background: #2563eb;
+      color: #ffffff;
       border: none;
       padding: 1rem;
-      border-radius: 12px;
+      border-radius: 8px;
       font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
-      transition: opacity .2s;
+      transition: all 0.2s;
+    }
+
+    .pay-btn:hover:not(:disabled) {
+      background: #1d4ed8;
     }
 
     .pay-btn:disabled {
-      opacity: 0.5;
+      background: #93c5fd;
       cursor: not-allowed;
     }
     
     .pay-btn__spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(255,255,255,.3);
-      border-top-color: #fff;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #ffffff;
       border-radius: 50%;
-      animation: spin .7s linear infinite;
+      animation: spin 0.7s linear infinite;
     }
     
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .summary-error {
-      color: #f87171;
+      color: #ef4444;
       font-size: 0.8rem;
       margin: 0;
       text-align: center;
@@ -442,7 +461,7 @@ import { Facture } from '../../../core/models/models';
     }
     
     .service-pay__title {
-      color: #fff;
+      color: #111827;
       font-weight: 600;
       font-size: 0.9rem;
       margin: 0;
@@ -455,13 +474,19 @@ import { Facture } from '../../../core/models/models';
     
     .service-pay__input {
       flex: 1;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
       padding: 0.75rem;
-      color: #fff;
+      color: #111827;
       font-size: 1rem;
       outline: none;
+      transition: all 0.2s;
+    }
+
+    .service-pay__input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
     
     .service-pay__btn {
