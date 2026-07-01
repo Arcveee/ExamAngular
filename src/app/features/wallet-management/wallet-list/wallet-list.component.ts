@@ -2,14 +2,17 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { WalletApiService } from '../../../core/services/wallet-api.service';
 import { Wallet, Page } from '../../../core/models/models';
+import { WalletSearchComponent } from '../wallet-search/wallet-search.component';
 
 @Component({
   selector: 'app-wallet-list',
   standalone: true,
-  imports: [DecimalPipe, DatePipe],
+  imports: [DecimalPipe, DatePipe, WalletSearchComponent],
   template: `
     <div class="wallet-list">
       <h2 class="wallet-list__title">Portefeuilles</h2>
+      
+      <app-wallet-search></app-wallet-search>
 
       @if (loading()) {
         <p class="state-msg">Chargement…</p>
