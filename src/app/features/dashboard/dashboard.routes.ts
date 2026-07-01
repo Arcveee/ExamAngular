@@ -11,4 +11,9 @@ export const DASHBOARD_ROUTES: Routes = [
     loadComponent: () =>
       import('./transfer/transfer.component').then(m => m.TransferComponent),
   },
+  {
+    path: 'billing',
+    loadComponent: () =>
+      import('./billing/billing.component').then(m => m.BillingComponent),
+  },
 ];

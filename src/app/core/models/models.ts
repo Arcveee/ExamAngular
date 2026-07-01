@@ -26,6 +26,8 @@ export interface Facture {
   montant: number;
   statut: 'PAYEE' | 'IMPAYEE';
   emetteur: string;
+  echeance?: string;
+  unite?: string;
 }
 
 export interface FactureDTO {
@@ -34,6 +36,8 @@ export interface FactureDTO {
   montant: number;
   statut: 'PAYEE' | 'IMPAYEE';
   emetteur: string;
+  echeance?: string;
+  unite?: string;
 }
 
 export interface Transaction {

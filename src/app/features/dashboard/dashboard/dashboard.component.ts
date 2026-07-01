@@ -57,6 +57,10 @@ declare const Chart: any;
           <div class="quick-action-btn__icon">↗</div>
           <span>Virement</span>
         </a>
+        <a class="quick-action-btn" routerLink="/client/billing">
+          <div class="quick-action-btn__icon">📄</div>
+          <span>Factures</span>
+        </a>
       </section>
 
       <section class="stats-row">
@@ -449,6 +453,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       next: wallet => {
         this.walletState.setBalance(wallet.balance);
         this.walletState.setWalletId(wallet.id);
+        this.walletState.setWalletCode(wallet.code);
         this.devise.set(wallet.devise);
         this.balanceLoading.set(false);
       },

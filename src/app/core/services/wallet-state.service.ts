@@ -11,6 +11,9 @@ export class WalletStateService {
   private readonly _walletId = signal<number | null>(null);
   readonly walletId = this._walletId.asReadonly();
 
+  private readonly _walletCode = signal<string>(localStorage.getItem('clientWalletCode') ?? '');
+  readonly walletCode = this._walletCode.asReadonly();
+
   setBalance(value: number): void {
     this._balance.set(value);
   }
@@ -26,5 +29,10 @@ export class WalletStateService {
 
   setWalletId(id: number): void {
     this._walletId.set(id);
+  }
+
+  setWalletCode(code: string): void {
+    localStorage.setItem('clientWalletCode', code);
+    this._walletCode.set(code);
   }
 }

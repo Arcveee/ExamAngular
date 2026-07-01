@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Facture, FactureDTO } from '../models/models';
@@ -14,6 +14,16 @@ export class BillingApiService {
   getByPhone(phone: string): Observable<Facture[]> {
     return this.http
       .get<FactureDTO[]>(`${this.base}/${phone}`)
+      .pipe(map(list => list.map(toFacture)));
+  }
+
+  getCurrentFactures(code: string, unite?: string): Observable<Facture[]> {
+    let params = new HttpParams();
+    if (unite) {
+      params = params.set('unite', unite);
+    }
+    return this.http
+      .get<FactureDTO[]>(`${this.base}/code/${code}`, { params })
       .pipe(map(list => list.map(toFacture)));
   }
 
