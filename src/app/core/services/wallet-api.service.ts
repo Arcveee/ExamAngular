@@ -29,15 +29,15 @@ export class WalletApiService {
       .pipe(map(toWallet));
   }
 
-  deposit(id: number, montant: number): Observable<Wallet> {
+  deposit(id: number, montant: number, moyen: string): Observable<Wallet> {
     return this.http
-      .post<WalletDTO>(`${this.base}/${id}/depot`, { montant })
+      .post<WalletDTO>(`${this.base}/${id}/deposit`, { montant, moyen })
       .pipe(map(toWallet));
   }
 
-  withdraw(id: number, montant: number): Observable<Wallet> {
+  withdraw(phoneNumber: string, montant: number): Observable<Wallet> {
     return this.http
-      .post<WalletDTO>(`${this.base}/${id}/retrait`, { montant })
+      .post<WalletDTO>(`${this.base}/withdraw`, { phoneNumber, montant })
       .pipe(map(toWallet));
   }
 

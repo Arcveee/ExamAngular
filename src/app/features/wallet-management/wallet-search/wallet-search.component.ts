@@ -17,7 +17,7 @@ import { Wallet } from '../../../core/models/models';
           placeholder="Numéro de téléphone"
           (keyup.enter)="search()"
         />
-        <button (click)="search()" [disabled]="!phoneNumber()">Rechercher</button>
+        <button (click)="search()" [disabled]="!phoneNumber() || loading()">Rechercher</button>
       </div>
 
       @if (loading()) {
@@ -31,6 +31,32 @@ import { Wallet } from '../../../core/models/models';
           <p><strong>Code :</strong> {{ wallet()?.code }}</p>
           <p><strong>Date de création :</strong> {{ wallet()?.createdAt | date:'dd/MM/yyyy' }}</p>
         </div>
+
+        <div class="operations">
+          @if (operationError()) {
+            <p class="operation-error">{{ operationError() }}</p>
+          }
+
+          <div class="operation-form">
+            <h4>Dépôt</h4>
+            <input type="number" [(ngModel)]="depositAmount" placeholder="Montant" />
+            <select [(ngModel)]="depositMethod">
+              <option value="CREDIT_CARD">Carte de crédit</option>
+              <option value="WALLET_TARGET">Wallet Target</option>
+            </select>
+            <button (click)="deposit()" [disabled]="!depositAmount() || !depositMethod() || operationLoading()">
+              Déposer
+            </button>
+          </div>
+
+          <div class="operation-form">
+            <h4>Retrait</h4>
+            <input type="number" [(ngModel)]="withdrawAmount" placeholder="Montant" />
+            <button (click)="withdraw()" [disabled]="!withdrawAmount() || operationLoading()">
+              Retirer
+            </button>
+          </div>
+        </div>
       }
     </div>
   `,
@@ -42,9 +68,16 @@ import { Wallet } from '../../../core/models/models';
     .search-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
     .state-msg { padding: 1rem; text-align: center; color: #666; }
     .state-msg--error { color: #c62828; font-weight: bold; }
-    .wallet-details { border-top: 1px solid #eee; padding-top: 1rem; }
+    .wallet-details { border-top: 1px solid #eee; padding-top: 1rem; margin-bottom: 1rem; }
     .wallet-details h3 { margin-top: 0; color: #1a237e; }
     .wallet-details p { margin: 0.5rem 0; }
+    .operations { display: flex; flex-direction: column; gap: 1rem; border-top: 1px solid #eee; padding-top: 1rem; }
+    .operation-form { display: flex; gap: 1rem; align-items: center; }
+    .operation-form h4 { margin: 0; width: 80px; color: #1a237e; }
+    .operation-form input, .operation-form select { padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+    .operation-form button { padding: 0.5rem 1rem; background: #43a047; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    .operation-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .operation-error { color: #c62828; font-weight: bold; padding: 0.5rem; background: #ffebee; border-radius: 4px; margin: 0; }
   `]
 })
 export class WalletSearchComponent {
@@ -55,12 +88,20 @@ export class WalletSearchComponent {
   loading = signal(false);
   error = signal(false);
 
+  depositAmount = signal<number | null>(null);
+  depositMethod = signal('CREDIT_CARD');
+  withdrawAmount = signal<number | null>(null);
+
+  operationLoading = signal(false);
+  operationError = signal<string | null>(null);
+
   search(): void {
     if (!this.phoneNumber()) return;
     
     this.loading.set(true);
     this.error.set(false);
     this.wallet.set(null);
+    this.resetOperations();
 
     this.walletApi.getByPhone(this.phoneNumber()).subscribe({
       next: (data) => {
@@ -72,5 +113,54 @@ export class WalletSearchComponent {
         this.loading.set(false);
       }
     });
+  }
+
+  deposit(): void {
+    const w = this.wallet();
+    const amount = this.depositAmount();
+    const method = this.depositMethod();
+    if (!w || !amount || !method) return;
+
+    this.operationLoading.set(true);
+    this.operationError.set(null);
+
+    this.walletApi.deposit(w.id, amount, method).subscribe({
+      next: (updatedWallet) => {
+        this.wallet.set(updatedWallet);
+        this.resetOperations();
+      },
+      error: (err) => {
+        this.operationError.set(err.error?.message || 'Erreur lors du dépôt');
+        this.operationLoading.set(false);
+      }
+    });
+  }
+
+  withdraw(): void {
+    const w = this.wallet();
+    const amount = this.withdrawAmount();
+    if (!w || !amount) return;
+
+    this.operationLoading.set(true);
+    this.operationError.set(null);
+
+    this.walletApi.withdraw(w.phoneNumber, amount).subscribe({
+      next: (updatedWallet) => {
+        this.wallet.set(updatedWallet);
+        this.resetOperations();
+      },
+      error: (err) => {
+        this.operationError.set(err.error?.message || 'Solde insuffisant ou erreur lors du retrait');
+        this.operationLoading.set(false);
+      }
+    });
+  }
+
+  private resetOperations(): void {
+    this.depositAmount.set(null);
+    this.withdrawAmount.set(null);
+    this.depositMethod.set('CREDIT_CARD');
+    this.operationLoading.set(false);
+    this.operationError.set(null);
   }
 }
