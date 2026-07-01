@@ -93,7 +93,11 @@ export class RoleSelectorComponent {
 
   select(role: UserRole): void {
     this.roleService.setRole(role);
-    this.router.navigate([role === 'agent' ? '/agent' : '/client']);
+    if (role === 'agent') {
+      this.router.navigate(['/admin/wallets']);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   confirmClient(): void {
@@ -101,6 +105,6 @@ export class RoleSelectorComponent {
     if (!phone) return;
     this.walletState.setPhone(phone);
     this.roleService.setRole('client');
-    this.router.navigate(['/client']);
+    this.router.navigate(['/dashboard']);
   }
 }

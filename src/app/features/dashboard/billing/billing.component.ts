@@ -578,8 +578,8 @@ export class BillingComponent implements OnInit {
     return this.selectedFactures().includes(id);
   }
 
-  goBack() {
-    this.router.navigate(['/client']);
+  goBack(): void {
+    this.router.navigate(['/dashboard']);
   }
 
   payService() {

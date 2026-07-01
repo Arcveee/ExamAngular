@@ -417,7 +417,7 @@ export class TransferComponent {
   }
 
   goBack(): void {
-    this.router.navigate(['/client']);
+    this.router.navigate(['/dashboard']);
   }
 
   submit(): void {

@@ -395,7 +395,7 @@ export class HistoryComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/client']);
+    this.router.navigate(['/dashboard']);
   }
 
   formatType(type: string): string {

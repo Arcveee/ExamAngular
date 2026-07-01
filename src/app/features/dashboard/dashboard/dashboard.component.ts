@@ -53,15 +53,15 @@ declare const Chart: any;
       </section>
 
       <section class="quick-actions">
-        <a class="quick-action-btn" routerLink="/client/transfer">
+        <a routerLink="/transfer" class="quick-action-btn">
           <div class="quick-action-btn__icon">↗</div>
-          <span>Virement</span>
+          <span>Transfert</span>
         </a>
-        <a class="quick-action-btn" routerLink="/client/billing">
+        <a routerLink="/bills/current" class="quick-action-btn">
           <div class="quick-action-btn__icon">📄</div>
           <span>Factures</span>
         </a>
-        <a class="quick-action-btn" routerLink="/client/history">
+        <a routerLink="/transactions" class="quick-action-btn">
           <div class="quick-action-btn__icon">🕒</div>
           <span>Historique</span>
         </a>
