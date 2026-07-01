@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Wallet, WalletDTO, Transaction, Page } from '../models/models';
 import { toWallet } from '../models/adapters';
@@ -21,6 +21,10 @@ export class WalletApiService {
     return this.http
       .get<WalletDTO>(`${this.base}/phone/${phone}`)
       .pipe(map(toWallet));
+  }
+
+  getBalance(phone: string): Observable<Wallet> {
+    return this.getByPhone(phone);
   }
 
   create(phoneNumber: string, ownerName: string): Observable<Wallet> {
@@ -47,5 +51,11 @@ export class WalletApiService {
 
   getHistory(id: number): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.base}/${id}/historique`);
+  }
+
+  getTransactionsByPhone(phone: string): Observable<Transaction[]> {
+    return this.getByPhone(phone).pipe(
+      switchMap(wallet => this.getHistory(wallet.id))
+    );
   }
 }
