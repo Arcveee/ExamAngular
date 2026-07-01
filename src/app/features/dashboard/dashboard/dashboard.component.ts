@@ -10,6 +10,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { WalletStateService } from '../../../core/services/wallet-state.service';
 import { WalletApiService } from '../../../core/services/wallet-api.service';
 import { Transaction } from '../../../core/models/models';
@@ -19,7 +20,7 @@ declare const Chart: any;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, RouterLink],
   template: `
     <div class="dashboard">
       <header class="dashboard__header">
@@ -49,6 +50,13 @@ declare const Chart: any;
           <span class="balance-card__dot balance-card__dot--green"></span>
           Compte actif
         </div>
+      </section>
+
+      <section class="quick-actions">
+        <a class="quick-action-btn" routerLink="/client/transfer">
+          <div class="quick-action-btn__icon">↗</div>
+          <span>Virement</span>
+        </a>
       </section>
 
       <section class="stats-row">
@@ -243,6 +251,46 @@ declare const Chart: any;
     }
 
     .balance-card__dot--green { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+
+    .quick-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .quick-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      color: rgba(255,255,255,.85);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: background .2s, transform .15s;
+      flex: 1;
+    }
+
+    .quick-action-btn:hover {
+      background: rgba(255,255,255,.12);
+      transform: translateY(-2px);
+    }
+
+    .quick-action-btn__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0070f3, #00c9a7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0,112,243,.3);
+    }
 
     .stats-row {
       display: grid;
