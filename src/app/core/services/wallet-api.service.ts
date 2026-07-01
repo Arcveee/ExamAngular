@@ -58,4 +58,12 @@ export class WalletApiService {
       switchMap(wallet => this.getHistory(wallet.id))
     );
   }
+
+  payService(phoneNumber: string, serviceName: string, amount: number): Observable<void> {
+    return this.http.post<void>(`${this.base}/pay`, { phoneNumber, serviceName, amount });
+  }
+
+  payFactures(phoneNumber: string, references: string[]): Observable<void> {
+    return this.http.post<void>(`${this.base}/pay-factures`, { phoneNumber, references });
+  }
 }

@@ -16,4 +16,9 @@ export const DASHBOARD_ROUTES: Routes = [
     loadComponent: () =>
       import('./billing/billing.component').then(m => m.BillingComponent),
   },
+  {
+    path: 'history',
+    loadComponent: () =>
+      import('./history/history.component').then(m => m.HistoryComponent),
+  },
 ];

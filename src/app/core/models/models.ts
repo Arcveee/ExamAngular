@@ -46,6 +46,8 @@ export interface Transaction {
   montant: number;
   date: string;
   description: string;
+  frais?: number;
+  statut?: string;
 }
 
 export interface Page<T> {

@@ -2,8 +2,10 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { switchMap } from 'rxjs';
 import { WalletStateService } from '../../../core/services/wallet-state.service';
 import { BillingApiService } from '../../../core/services/billing-api.service';
+import { WalletApiService } from '../../../core/services/wallet-api.service';
 import { Facture } from '../../../core/models/models';
 
 @Component({
@@ -25,13 +27,23 @@ import { Facture } from '../../../core/models/models';
         </div>
       </header>
 
+      @if (successMessage()) {
+        <div class="success-banner">
+          <div class="success-banner__icon">✓</div>
+          <div>
+            <p class="success-banner__title">Paiement effectué</p>
+            <p class="success-banner__sub">{{ successMessage() }}</p>
+          </div>
+        </div>
+      }
+
       <div class="filter-section">
-        <label class="filter-label" for="provider-select">Filtrer par fournisseur</label>
+        <label class="filter-label" for="provider-select">Sélectionner un fournisseur</label>
         <select
           id="provider-select"
           class="filter-select"
           [(ngModel)]="selectedProvider"
-          (ngModelChange)="loadFactures()"
+          (ngModelChange)="onProviderChange()"
         >
           <option value="">Tous les fournisseurs</option>
           <option value="WOYAFAL">WOYAFAL</option>
@@ -76,20 +88,63 @@ import { Facture } from '../../../core/models/models';
         }
       </div>
 
-      @if (selectedFactures().length > 0) {
-        <div class="summary-section">
+      <div class="summary-section">
+        @if (paymentError()) {
+          <div class="api-error">{{ paymentError() }}</div>
+        }
+
+        @if (selectedFactures().length > 0) {
           <div class="summary-info">
             <span class="summary-count">{{ selectedFactures().length }} sélectionnée(s)</span>
             <span class="summary-total">Total: {{ totalSelectedAmount() | number: '1.2-2' }} MAD</span>
           </div>
-          <button class="pay-btn" (click)="proceedToPayment()" [disabled]="totalSelectedAmount() > balance()">
-            Préparer le paiement
+          <button 
+            class="pay-btn" 
+            [class.pay-btn--loading]="paymentLoading()"
+            (click)="paySelectedFactures()" 
+            [disabled]="totalSelectedAmount() > balance() || paymentLoading()"
+          >
+            @if (paymentLoading()) {
+              <span class="pay-btn__spinner"></span> Paiement en cours...
+            } @else {
+              Payer la sélection
+            }
           </button>
           @if (totalSelectedAmount() > balance()) {
             <p class="summary-error">Solde insuffisant pour payer ces factures.</p>
           }
-        </div>
-      }
+        } @else {
+          <div class="service-pay">
+            <p class="service-pay__title">Paiement libre de service</p>
+            <div class="service-pay__inputs">
+              <input 
+                type="number" 
+                class="service-pay__input" 
+                [(ngModel)]="serviceAmount" 
+                placeholder="Montant (MAD)"
+                min="0.01"
+              />
+              <button 
+                class="pay-btn service-pay__btn" 
+                [class.pay-btn--loading]="paymentLoading()"
+                (click)="payService()" 
+                [disabled]="!canPayService() || paymentLoading()"
+              >
+                @if (paymentLoading()) {
+                  <span class="pay-btn__spinner"></span>
+                } @else {
+                  Payer le service
+                }
+              </button>
+            </div>
+            @if (!selectedProvider()) {
+              <p class="summary-error">Sélectionnez d'abord un fournisseur ci-dessus.</p>
+            } @else if (serviceAmount() && serviceAmount()! > balance()) {
+              <p class="summary-error">Solde insuffisant.</p>
+            }
+          </div>
+        }
+      </div>
     </div>
   `,
   styles: [`
@@ -103,7 +158,7 @@ import { Facture } from '../../../core/models/models';
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      padding-bottom: 6rem; /* Space for summary footer */
+      padding-bottom: 9rem;
     }
 
     .billing-page__header {
@@ -147,6 +202,49 @@ import { Facture } from '../../../core/models/models';
       font-size: 0.8rem;
       font-weight: 600;
       white-space: nowrap;
+    }
+    
+    .success-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(74,222,128,.12);
+      border: 1px solid rgba(74,222,128,.35);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      animation: slideDown .3s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-banner__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #4ade80;
+      color: #0f2810;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .success-banner__title {
+      color: #4ade80;
+      font-weight: 700;
+      margin: 0 0 0.15rem;
+      font-size: 0.95rem;
+    }
+
+    .success-banner__sub {
+      color: rgba(255,255,255,.6);
+      font-size: 0.82rem;
+      margin: 0;
     }
 
     .filter-section {
@@ -270,6 +368,16 @@ import { Facture } from '../../../core/models/models';
       gap: 0.75rem;
       z-index: 10;
     }
+    
+    .api-error {
+      background: rgba(248,113,113,.1);
+      border: 1px solid rgba(248,113,113,.3);
+      border-radius: 10px;
+      padding: 0.5rem;
+      color: #f87171;
+      font-size: 0.85rem;
+      text-align: center;
+    }
 
     .summary-info {
       display: flex;
@@ -289,6 +397,10 @@ import { Facture } from '../../../core/models/models';
     }
 
     .pay-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
       background: linear-gradient(135deg, #0070f3, #00c9a7);
       color: #fff;
       border: none;
@@ -297,12 +409,24 @@ import { Facture } from '../../../core/models/models';
       font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
+      transition: opacity .2s;
     }
 
     .pay-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
+    
+    .pay-btn__spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .summary-error {
       color: #f87171;
@@ -310,15 +434,50 @@ import { Facture } from '../../../core/models/models';
       margin: 0;
       text-align: center;
     }
+    
+    .service-pay {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .service-pay__title {
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    
+    .service-pay__inputs {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .service-pay__input {
+      flex: 1;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 10px;
+      padding: 0.75rem;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+    
+    .service-pay__btn {
+      padding: 0.75rem 1.5rem;
+    }
   `]
 })
 export class BillingComponent implements OnInit {
   private walletState = inject(WalletStateService);
   private billingApi = inject(BillingApiService);
+  private walletApi = inject(WalletApiService);
   private router = inject(Router);
 
   readonly balance = this.walletState.balance;
   readonly walletCode = this.walletState.walletCode;
+  readonly phone = this.walletState.phone;
 
   selectedProvider = signal('');
   factures = signal<Facture[]>([]);
@@ -326,14 +485,30 @@ export class BillingComponent implements OnInit {
   error = signal(false);
 
   selectedFactures = signal<string[]>([]);
+  serviceAmount = signal<number | null>(null);
+  
+  paymentLoading = signal(false);
+  paymentError = signal<string | null>(null);
+  successMessage = signal<string | null>(null);
 
   readonly totalSelectedAmount = computed(() => {
     return this.factures()
       .filter(f => this.selectedFactures().includes(f.id))
       .reduce((sum, f) => sum + f.montant, 0);
   });
+  
+  readonly canPayService = computed(() => {
+    const amt = this.serviceAmount();
+    return !!this.selectedProvider() && amt !== null && amt > 0 && amt <= this.balance();
+  });
 
   ngOnInit() {
+    this.loadFactures();
+  }
+
+  onProviderChange() {
+    this.successMessage.set(null);
+    this.paymentError.set(null);
     this.loadFactures();
   }
 
@@ -346,13 +521,12 @@ export class BillingComponent implements OnInit {
 
     this.loading.set(true);
     this.error.set(false);
-    this.selectedFactures.set([]); // Reset selection on filter change
+    this.selectedFactures.set([]); 
 
     const unite = this.selectedProvider() || undefined;
 
     this.billingApi.getCurrentFactures(code, unite).subscribe({
       next: (data) => {
-        // Filter out already paid factures just in case the API doesn't do it
         this.factures.set(data.filter(f => f.statut !== 'PAYEE'));
         this.loading.set(false);
       },
@@ -364,6 +538,8 @@ export class BillingComponent implements OnInit {
   }
 
   toggleSelection(id: string) {
+    this.successMessage.set(null);
+    this.paymentError.set(null);
     this.selectedFactures.update(selected => {
       if (selected.includes(id)) {
         return selected.filter(sId => sId !== id);
@@ -381,8 +557,59 @@ export class BillingComponent implements OnInit {
     this.router.navigate(['/client']);
   }
 
-  proceedToPayment() {
-    // Feature suivante : aller vers la page de paiement avec les factures sélectionnées
-    console.log('Proceeding to payment for:', this.selectedFactures());
+  payService() {
+    if (!this.canPayService()) return;
+    
+    this.paymentLoading.set(true);
+    this.paymentError.set(null);
+    this.successMessage.set(null);
+    
+    const amount = this.serviceAmount()!;
+    const service = this.selectedProvider();
+    
+    this.walletApi.payService(this.phone(), service, amount)
+      .pipe(switchMap(() => this.walletApi.getBalance(this.phone())))
+      .subscribe({
+        next: (wallet) => {
+          this.walletState.setBalance(wallet.balance);
+          this.successMessage.set(`Paiement de ${amount} MAD vers ${service} réussi.`);
+          this.serviceAmount.set(null);
+          this.paymentLoading.set(false);
+          this.loadFactures();
+        },
+        error: (err) => {
+          this.paymentError.set(err.error?.message || 'Erreur lors du paiement du service.');
+          this.paymentLoading.set(false);
+        }
+      });
+  }
+  
+  paySelectedFactures() {
+    if (this.selectedFactures().length === 0 || this.totalSelectedAmount() > this.balance()) return;
+    
+    this.paymentLoading.set(true);
+    this.paymentError.set(null);
+    this.successMessage.set(null);
+    
+    const references = this.factures()
+      .filter(f => this.selectedFactures().includes(f.id))
+      .map(f => f.reference);
+      
+    const total = this.totalSelectedAmount();
+    
+    this.walletApi.payFactures(this.phone(), references)
+      .pipe(switchMap(() => this.walletApi.getBalance(this.phone())))
+      .subscribe({
+        next: (wallet) => {
+          this.walletState.setBalance(wallet.balance);
+          this.successMessage.set(`Paiement de ${references.length} facture(s) d'un total de ${total} MAD réussi.`);
+          this.paymentLoading.set(false);
+          this.loadFactures();
+        },
+        error: (err) => {
+          this.paymentError.set(err.error?.message || 'Erreur lors du paiement des factures.');
+          this.paymentLoading.set(false);
+        }
+      });
   }
 }

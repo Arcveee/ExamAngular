@@ -61,6 +61,10 @@ declare const Chart: any;
           <div class="quick-action-btn__icon">📄</div>
           <span>Factures</span>
         </a>
+        <a class="quick-action-btn" routerLink="/client/history">
+          <div class="quick-action-btn__icon">🕒</div>
+          <span>Historique</span>
+        </a>
       </section>
 
       <section class="stats-row">
