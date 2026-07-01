@@ -4,8 +4,11 @@ export function toWallet(dto: WalletDTO): Wallet {
   return {
     id: dto.id,
     phoneNumber: dto.phoneNumber,
+    code: dto.code,
     balance: dto.balance,
+    devise: dto.devise,
     ownerName: dto.ownerName,
+    createdAt: dto.createdAt,
   };
 }
 

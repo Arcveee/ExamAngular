@@ -3,15 +3,21 @@ export type UserRole = 'agent' | 'client' | null;
 export interface Wallet {
   id: number;
   phoneNumber: string;
+  code: string;
   balance: number;
+  devise: string;
   ownerName: string;
+  createdAt: string;
 }
 
 export interface WalletDTO {
   id: number;
   phoneNumber: string;
+  code: string;
   balance: number;
+  devise: string;
   ownerName: string;
+  createdAt: string;
 }
 
 export interface Facture {
