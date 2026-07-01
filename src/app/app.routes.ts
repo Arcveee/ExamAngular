@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { agentGuard } from './core/guards/agent.guard';
 import { clientGuard } from './core/guards/client.guard';
+import { ShellComponent } from './shared/shell/shell.component';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,7 @@ export const routes: Routes = [
   },
   {
     path: 'agent',
+    component: ShellComponent,
     canActivate: [agentGuard],
     loadChildren: () =>
       import('./features/wallet-management/wallet-management.routes').then(
@@ -20,6 +22,7 @@ export const routes: Routes = [
   },
   {
     path: 'client',
+    component: ShellComponent,
     canActivate: [clientGuard],
     loadChildren: () =>
       import('./features/dashboard/dashboard.routes').then(
