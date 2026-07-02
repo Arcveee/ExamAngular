@@ -37,7 +37,7 @@ import { WalletCreateComponent } from '../wallet-create/wallet-create.component'
               <tr>
                 <td>{{ w.phoneNumber }}</td>
                 <td>{{ w.ownerName }}</td>
-                <td>{{ w.balance | number: '1.2-2' }} francs</td>
+                <td>{{ w.balance | number: '1.0-0' }} francs</td>
                 <td>{{ w.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
               </tr>
             }
