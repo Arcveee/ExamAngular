@@ -42,8 +42,8 @@ declare const Chart: any;
           <p class="balance-card__error">Impossible de charger le solde</p>
         } @else {
           <p class="balance-card__amount">
-            {{ balance() | number: '1.2-2' }}
-            <span class="balance-card__devise">{{ devise() }}</span>
+            {{ balance() | number: '1.0-0' }}
+            <span class="balance-card__devise">francs</span>
           </p>
         }
         <div class="balance-card__meta">
@@ -70,11 +70,11 @@ declare const Chart: any;
       <section class="stats-row">
         <div class="stat-card stat-card--income">
           <p class="stat-card__label">Revenus du mois</p>
-          <p class="stat-card__value">+{{ totalRevenues() | number: '1.2-2' }}</p>
+          <p class="stat-card__value">+{{ totalRevenues() | number: '1.0-0' }} francs</p>
         </div>
         <div class="stat-card stat-card--expense">
           <p class="stat-card__label">Dépenses du mois</p>
-          <p class="stat-card__value">-{{ totalExpenses() | number: '1.2-2' }}</p>
+          <p class="stat-card__value">-{{ totalExpenses() | number: '1.0-0' }} francs</p>
         </div>
       </section>
 
@@ -95,12 +95,12 @@ declare const Chart: any;
               <div class="legend-item">
                 <span class="legend-dot legend-dot--income"></span>
                 <span>Revenus</span>
-                <strong>{{ totalRevenues() | number: '1.2-2' }}</strong>
+                <strong>{{ totalRevenues() | number: '1.0-0' }} francs</strong>
               </div>
               <div class="legend-item">
                 <span class="legend-dot legend-dot--expense"></span>
                 <span>Dépenses</span>
-                <strong>{{ totalExpenses() | number: '1.2-2' }}</strong>
+                <strong>{{ totalExpenses() | number: '1.0-0' }} francs</strong>
               </div>
             </div>
           </div>

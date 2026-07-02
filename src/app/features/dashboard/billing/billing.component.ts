@@ -21,9 +21,8 @@ import { Facture } from '../../../core/models/models';
           </svg>
           Retour
         </button>
-        <h1 class="billing-page__title">Factures Impayées</h1>
         <div class="billing-page__balance-pill">
-          {{ balance() | number: '1.2-2' }} MAD
+          {{ balance() | number: '1.0-0' }} francs
         </div>
       </header>
 
@@ -47,8 +46,6 @@ import { Facture } from '../../../core/models/models';
         >
           <option value="">Tous les fournisseurs</option>
           <option value="WOYAFAL">WOYAFAL</option>
-          <option value="SENELEC">SENELEC</option>
-          <option value="SONATEL">SONATEL</option>
           <option value="ISM">ISM</option>
         </select>
       </div>
@@ -77,7 +74,7 @@ import { Facture } from '../../../core/models/models';
                   <span class="facture-card__ref">Réf: {{ facture.reference }}</span>
                 </div>
                 <div class="facture-card__details">
-                  <div class="facture-card__amount">{{ facture.montant | number: '1.2-2' }} MAD</div>
+                  <div class="facture-card__amount">{{ facture.montant | number: '1.0-0' }} francs</div>
                   <div class="facture-card__date">
                     Échéance: {{ facture.echeance ? (facture.echeance | date: 'dd/MM/yyyy') : 'N/A' }}
                   </div>
@@ -96,7 +93,7 @@ import { Facture } from '../../../core/models/models';
         @if (selectedFactures().length > 0) {
           <div class="summary-info">
             <span class="summary-count">{{ selectedFactures().length }} sélectionnée(s)</span>
-            <span class="summary-total">Total: {{ totalSelectedAmount() | number: '1.2-2' }} MAD</span>
+            <span class="summary-total">Total: {{ totalSelectedAmount() | number: '1.0-0' }} francs</span>
           </div>
           <button 
             class="pay-btn" 
@@ -121,8 +118,9 @@ import { Facture } from '../../../core/models/models';
                 type="number" 
                 class="service-pay__input" 
                 [(ngModel)]="serviceAmount" 
-                placeholder="Montant (MAD)"
-                min="0.01"
+                placeholder="Montant (francs)"
+                min="1"
+                (keydown)="preventInvalidChars($event)"
               />
               <button 
                 class="pay-btn service-pay__btn" 
@@ -582,6 +580,13 @@ export class BillingComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
+  preventInvalidChars(event: KeyboardEvent): void {
+    const invalidChars = ['e', 'E', '+', '-', '.', ','];
+    if (invalidChars.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   payService() {
     if (!this.canPayService()) return;
     
@@ -597,7 +602,7 @@ export class BillingComponent implements OnInit {
       .subscribe({
         next: (wallet) => {
           this.walletState.setBalance(wallet.balance);
-          this.successMessage.set(`Paiement de ${amount} MAD vers ${service} réussi.`);
+          this.successMessage.set(`Paiement de ${amount} francs vers ${service} réussi.`);
           this.serviceAmount.set(null);
           this.paymentLoading.set(false);
           this.loadFactures();
@@ -621,13 +626,14 @@ export class BillingComponent implements OnInit {
       .map(f => f.reference);
       
     const total = this.totalSelectedAmount();
+    const service = this.selectedProvider();
     
-    this.walletApi.payFactures(this.phone(), references)
+    this.walletApi.payFactures(this.phone(), service, references)
       .pipe(switchMap(() => this.walletApi.getBalance(this.phone())))
       .subscribe({
         next: (wallet) => {
           this.walletState.setBalance(wallet.balance);
-          this.successMessage.set(`Paiement de ${references.length} facture(s) d'un total de ${total} MAD réussi.`);
+          this.successMessage.set(`Paiement de ${references.length} facture(s) d'un total de ${total} francs réussi.`);
           this.paymentLoading.set(false);
           this.loadFactures();
         },

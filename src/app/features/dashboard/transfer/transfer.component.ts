@@ -21,7 +21,7 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
         </button>
         <h1 class="transfer-page__title">Virement</h1>
         <div class="transfer-page__balance-pill">
-          {{ balance() | number: '1.2-2' }} {{ devise() }}
+          {{ balance() | number: '1.0-0' }} francs
         </div>
       </header>
 
@@ -30,7 +30,7 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
           <div class="success-banner__icon">✓</div>
           <div>
             <p class="success-banner__title">Virement effectué</p>
-            <p class="success-banner__sub">{{ lastMontant() | number:'1.2-2' }} {{ devise() }} envoyé à {{ lastRecipient() }}</p>
+            <p class="success-banner__sub">{{ lastMontant() | number:'1.0-0' }} francs envoyé à {{ lastRecipient() }}</p>
           </div>
         </div>
       }
@@ -47,10 +47,10 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
             id="recipient"
             type="tel"
             class="field__input"
-            [(ngModel)]="recipient"
-            placeholder="Ex: 0612345678"
+            [ngModel]="recipient()"
+            placeholder="Ex: 77 123 43 32"
             (blur)="recipientTouched.set(true)"
-            (ngModelChange)="clearSuccess()"
+            (ngModelChange)="onPhoneInput($event); clearSuccess()"
             autocomplete="off"
           />
           @if (recipientTouched() && recipientError()) {
@@ -66,12 +66,13 @@ import { WalletApiService } from '../../../core/services/wallet-api.service';
               type="number"
               class="field__input field__input--amount"
               [(ngModel)]="amount"
-              placeholder="0.00"
-              min="0.01"
+              placeholder="0"
+              min="1"
+              (keydown)="preventInvalidChars($event)"
               (blur)="amountTouched.set(true)"
               (ngModelChange)="clearSuccess()"
             />
-            <span class="field__devise">{{ devise() }}</span>
+            <span class="field__devise">francs</span>
           </div>
           @if (amountTouched() && amountError()) {
             <p class="field__error">{{ amountError() }}</p>
@@ -390,7 +391,8 @@ export class TransferComponent {
   readonly recipientError = computed(() => {
     const value = this.recipient().trim();
     if (!value) return 'Le numéro destinataire est requis';
-    if (!/^[0-9]{10,15}$/.test(value)) return 'Format invalide (10 à 15 chiffres)';
+    const digits = value.replace(/\s/g, '');
+    if (!/^[0-9]{9}$/.test(digits)) return 'Format invalide (9 chiffres — ex: 77 123 43 32)';
     if (value === this.senderPhone()) return 'Le destinataire ne peut pas être vous-même';
     return null;
   });
@@ -411,6 +413,16 @@ export class TransferComponent {
       this.walletId() !== null
   );
 
+  onPhoneInput(value: string): void {
+    const clean = value.replace(/\D/g, '').substring(0, 9);
+    let formatted = '';
+    if (clean.length > 0) formatted = clean.substring(0, 2);
+    if (clean.length > 2) formatted += ' ' + clean.substring(2, 5);
+    if (clean.length > 5) formatted += ' ' + clean.substring(5, 7);
+    if (clean.length > 7) formatted += ' ' + clean.substring(7, 9);
+    this.recipient.set(formatted);
+  }
+
   clearSuccess(): void {
     this.success.set(false);
     this.apiError.set(null);
@@ -418,6 +430,13 @@ export class TransferComponent {
 
   goBack(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  preventInvalidChars(event: KeyboardEvent): void {
+    const invalidChars = ['e', 'E', '+', '-', '.', ','];
+    if (invalidChars.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 
   submit(): void {

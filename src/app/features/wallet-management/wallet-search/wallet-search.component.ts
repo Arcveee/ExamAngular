@@ -12,9 +12,10 @@ import { Wallet } from '../../../core/models/models';
     <div class="wallet-search">
       <div class="search-bar">
         <input 
-          type="text" 
-          [(ngModel)]="phoneNumber" 
-          placeholder="Numéro de téléphone"
+          type="tel" 
+          [ngModel]="phoneNumber()"
+          (ngModelChange)="onPhoneInput($event)"
+          placeholder="Ex: 77 123 43 32"
           (keyup.enter)="search()"
         />
         <button (click)="search()" [disabled]="!phoneNumber() || loading()">Rechercher</button>
@@ -95,15 +96,27 @@ export class WalletSearchComponent {
   operationLoading = signal(false);
   operationError = signal<string | null>(null);
 
+  onPhoneInput(value: string): void {
+    const clean = value.replace(/\D/g, '').substring(0, 9);
+    let formatted = '';
+    if (clean.length > 0) formatted = clean.substring(0, 2);
+    if (clean.length > 2) formatted += ' ' + clean.substring(2, 5);
+    if (clean.length > 5) formatted += ' ' + clean.substring(5, 7);
+    if (clean.length > 7) formatted += ' ' + clean.substring(7, 9);
+    this.phoneNumber.set(formatted);
+  }
+
   search(): void {
-    if (!this.phoneNumber()) return;
+    const phone = this.phoneNumber().trim();
+    const clean = phone.replace(/\s/g, '');
+    if (!clean || clean.length !== 9) return;
     
     this.loading.set(true);
     this.error.set(false);
     this.wallet.set(null);
     this.resetOperations();
 
-    this.walletApi.getByPhone(this.phoneNumber()).subscribe({
+    this.walletApi.getByPhone(phone).subscribe({
       next: (data) => {
         this.wallet.set(data);
         this.loading.set(false);

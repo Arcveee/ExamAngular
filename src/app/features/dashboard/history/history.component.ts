@@ -21,7 +21,7 @@ import { Transaction } from '../../../core/models/models';
         </button>
         <h1 class="history-page__title">Historique</h1>
         <div class="history-page__balance-pill">
-          {{ balance() | number: '1.2-2' }} MAD
+          {{ balance() | number: '1.0-0' }} francs
         </div>
       </header>
 
@@ -70,9 +70,9 @@ import { Transaction } from '../../../core/models/models';
                   <td>{{ tx.date | date:'dd/MM/yyyy HH:mm' }}</td>
                   <td>{{ formatType(tx.type) }}</td>
                   <td class="text-right amount-col" [class.amount--positive]="isPositive(tx)" [class.amount--negative]="!isPositive(tx)">
-                    {{ isPositive(tx) ? '+' : '-' }}{{ tx.montant | number:'1.2-2' }}
+                    {{ isPositive(tx) ? '+' : '-' }}{{ tx.montant | number:'1.0-0' }} francs
                   </td>
-                  <td class="text-right">{{ (tx.frais || 0) | number:'1.2-2' }}</td>
+                  <td class="text-right">{{ (tx.frais || 0) | number:'1.0-0' }}</td>
                   <td class="text-center">
                     <span class="status-badge" 
                           [class.status-badge--success]="(tx.statut || 'SUCCESS') === 'SUCCESS'"
