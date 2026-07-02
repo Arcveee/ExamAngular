@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Facture, FactureDTO } from '../models/models';
-import { toFacture } from '../models/adapters';
+import { Facture } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class BillingApiService {
@@ -17,14 +16,34 @@ export class BillingApiService {
       .pipe(map(list => list.map(toFacture)));
   }
 
-  getCurrentFactures(code: string, unite?: string): Observable<Facture[]> {
-    let params = new HttpParams();
-    if (unite) {
-      params = params.set('unite', unite);
+  getCurrentFactures(provider?: string): Observable<Facture[]> {
+    if (!provider) {
+      // Load WOYAFAL and ISM in parallel and merge
+      const woyafal$ = this.http
+        .get<any[]>(`${this.base}/WOYAFAL/current`)
+        .pipe(map(list => list.map(this.toFacture)));
+      const ism$ = this.http
+        .get<any[]>(`${this.base}/ISM/current`)
+        .pipe(map(list => list.map(this.toFacture)));
+      return woyafal$.pipe(
+        switchMap(woy => ism$.pipe(map(ism => [...woy, ...ism])))
+      );
     }
     return this.http
-      .get<FactureDTO[]>(`${this.base}/${code}/current`, { params })
-      .pipe(map(list => list.map(toFacture)));
+      .get<any[]>(`${this.base}/${provider}/current`)
+      .pipe(map(list => list.map(this.toFacture)));
+  }
+
+  private toFacture(bill: any): Facture {
+    return {
+      id: bill.reference,
+      reference: bill.reference,
+      montant: Number(bill.amount),
+      statut: bill.paid ? 'PAYEE' : 'IMPAYEE',
+      emetteur: bill.provider,
+      echeance: bill.billDate,
+      unite: bill.provider,
+    };
   }
 
   pay(factureId: string, walletId: number): Observable<void> {

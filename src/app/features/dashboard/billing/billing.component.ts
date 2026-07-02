@@ -536,19 +536,13 @@ export class BillingComponent implements OnInit {
   }
 
   loadFactures() {
-    const code = this.walletCode();
-    if (!code) {
-      this.error.set(true);
-      return;
-    }
-
     this.loading.set(true);
     this.error.set(false);
     this.selectedFactures.set([]); 
 
-    const unite = this.selectedProvider() || undefined;
+    const provider = this.selectedProvider() || undefined;
 
-    this.billingApi.getCurrentFactures(code, unite).subscribe({
+    this.billingApi.getCurrentFactures(provider).subscribe({
       next: (data) => {
         this.factures.set(data.filter(f => f.statut !== 'PAYEE'));
         this.loading.set(false);
