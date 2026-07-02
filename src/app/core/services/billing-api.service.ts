@@ -12,8 +12,8 @@ export class BillingApiService {
 
   getByPhone(phone: string): Observable<Facture[]> {
     return this.http
-      .get<FactureDTO[]>(`${this.base}/${phone}`)
-      .pipe(map(list => list.map(toFacture)));
+      .get<any[]>(`${this.base}/${phone}`)
+      .pipe(map(list => list.map(this.toFacture)));
   }
 
   getCurrentFactures(provider?: string): Observable<Facture[]> {

@@ -30,8 +30,15 @@ export class WalletApiService {
   }
 
   create(phoneNumber: string, ownerName: string): Observable<Wallet> {
+    const code = 'WLT-' + Math.random().toString(36).substr(2, 6).toUpperCase();
     return this.http
-      .post<WalletDTO>(this.base, { phoneNumber, ownerName })
+      .post<WalletDTO>(this.base, { 
+        phoneNumber, 
+        ownerName,
+        initialBalance: 0,
+        code,
+        currency: 'XOF'
+      })
       .pipe(map(toWallet));
   }
 
@@ -52,7 +59,22 @@ export class WalletApiService {
   }
 
   getTransactionsByPhone(phone: string): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.base}/${encodeURIComponent(phone)}/transactions`);
+    return this.http.get<any[]>(`${this.base}/${encodeURIComponent(phone)}/transactions`)
+      .pipe(map(list => {
+        // Handle paginated response (Spring Page) or plain array
+        const items = Array.isArray(list) ? list : (list as any).content ?? [];
+        return items.map((tx: any): Transaction => ({
+          id: tx.id,
+          type: tx.type,
+          montant: Number(tx.amount ?? tx.montant ?? 0),
+          date: tx.createdAt ?? tx.date,
+          description: tx.type,
+          frais: Number(tx.fee ?? tx.frais ?? 0),
+          statut: tx.status ?? tx.statut ?? 'SUCCESS',
+          sourceWalletId: tx.sourceWalletId,
+          targetWalletId: tx.targetWalletId,
+        }));
+      }));
   }
 
   payService(phoneNumber: string, serviceName: string, amount: number): Observable<void> {

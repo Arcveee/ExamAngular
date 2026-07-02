@@ -90,7 +90,7 @@ declare const Chart: any;
           <div class="chart-section__placeholder">Aucune transaction ce mois-ci</div>
         } @else {
           <div class="chart-section__wrap">
-            <canvas #chartCanvas width="260" height="260"></canvas>
+            <canvas #chartCanvas width="120" height="120"></canvas>
             <div class="chart-section__legend">
               <div class="legend-item">
                 <span class="legend-dot legend-dot--income"></span>
@@ -305,22 +305,22 @@ declare const Chart: any;
       background: #ffffff;
       border: 1px solid #e5e7eb;
       border-radius: 16px;
-      padding: 1.5rem;
+      padding: 1rem 1.25rem;
       box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
     }
 
     .chart-section__title {
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      margin: 0 0 1.5rem;
+      margin: 0 0 0.75rem;
       color: #111827;
     }
 
     .chart-section__wrap {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 1.5rem;
+      gap: 1.25rem;
     }
 
     .chart-section__placeholder {
@@ -339,23 +339,23 @@ declare const Chart: any;
 
     .chart-section__legend {
       display: flex;
+      flex-direction: column;
       justify-content: center;
-      gap: 1.5rem;
-      width: 100%;
+      gap: 0.75rem;
     }
 
     .legend-item {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #4b5563;
-      gap: 0.2rem;
+      gap: 0.4rem;
     }
 
     .legend-item strong {
       color: #111827;
-      font-size: 0.95rem;
+      font-size: 0.82rem;
     }
 
     .legend-dot {
@@ -451,13 +451,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
         });
 
-        const incomeTypes = ['DEPOT', 'DEPOT_CARTE', 'VIREMENT_ENTRANT', 'CREDIT', 'RECEIVE'];
+        const incomeTypes = ['DEPOT', 'DEPOT_CARTE', 'VIREMENT_ENTRANT', 'CREDIT', 'RECEIVE', 'DEPOSIT'];
+        const myWalletId = this.walletState.walletId();
         let rev = 0;
         let exp = 0;
 
         monthly.forEach(tx => {
           const typeUpper = tx.type?.toUpperCase() ?? '';
+          let isIncome = false;
+          
           if (incomeTypes.some(t => typeUpper.includes(t))) {
+            isIncome = true;
+          } else if (typeUpper === 'TRANSFER' || typeUpper === 'TRANSFERT') {
+            if (tx.targetWalletId === myWalletId) {
+              isIncome = true;
+            }
+          }
+          
+          if (isIncome) {
             rev += tx.montant;
           } else {
             exp += tx.montant;
@@ -516,6 +527,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         ],
       },
       options: {
+        responsive: false,
+        maintainAspectRatio: false,
         cutout: '70%',
         plugins: {
           legend: { display: false },
